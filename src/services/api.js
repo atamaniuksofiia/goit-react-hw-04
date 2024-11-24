@@ -17,10 +17,10 @@ export const searchImages = async (query, page = 1, perPage = 10) => {
         per_page: perPage,
       },
     });
-    return response.data; // Повертає об'єкт з даними
+    return response.data;
   } catch (error) {
     console.error("Помилка під час пошуку зображень:", error);
-    throw error; // Кидає помилку для обробки у вищих рівнях
+    throw error;
   }
 };
 
@@ -30,7 +30,7 @@ export const getPopularImages = async (page = 1, perPage = 10) => {
       params: {
         page,
         per_page: perPage,
-        order_by: "popular", // Сортування за популярністю
+        order_by: "popular",
       },
     });
     return response.data;

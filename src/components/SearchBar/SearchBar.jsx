@@ -1,5 +1,5 @@
 import { useState } from "react";
-
+import toast from "react-hot-toast";
 const SearchBar = ({ onChangeQuery }) => {
   const [inputValue, setInputValue] = useState("");
 
@@ -10,10 +10,11 @@ const SearchBar = ({ onChangeQuery }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (inputValue.trim() === "") {
-      alert("Будь ласка, введіть текст для пошуку.");
+      toast.error("Будь ласка, введіть текст для пошуку!");
       return;
     }
-    onChangeQuery(inputValue);
+    onChangeQuery(inputValue.trim());
+    setInputValue("");
   };
 
   return (
