@@ -1,5 +1,6 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
+import s from "./SearchBar.module.css";
 const SearchBar = ({ onChangeQuery }) => {
   const [inputValue, setInputValue] = useState("");
 
@@ -18,8 +19,8 @@ const SearchBar = ({ onChangeQuery }) => {
   };
 
   return (
-    <header>
-      <form onSubmit={handleSubmit}>
+    <header className={s.header}>
+      <form className={s.search} onSubmit={handleSubmit}>
         <input
           type="text"
           autoComplete="off"
