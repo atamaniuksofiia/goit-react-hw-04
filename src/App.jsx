@@ -1,6 +1,6 @@
 import SearchBar from "./components/SearchBar/SearchBar";
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { searchImages } from "./services/api";
 import ImageGallery from "./components/ImageGallery/ImageGallery";
 import Loader from "./components/Loader/Loader";
@@ -21,7 +21,35 @@ const App = () => {
     imageAlt: "",
   });
 
-  const handleSearch = async (newQuery) => {
+  useEffect(() => {
+    if (!query) return;
+
+    const fetchImages = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const data = await searchImages(query, page);
+        if (data.results.length === 0) {
+          if (page === 1) {
+            setError("За вашим запитом нічого не знайдено.");
+          }
+        } else {
+          setImages((prevImages) =>
+            page === 1 ? data.results : [...prevImages, ...data.results]
+          );
+        }
+      } catch (error) {
+        setError("Не вдалося завантажити зображення. Спробуйте ще раз.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchImages();
+  }, [query, page]);
+
+  const handleSearch = (newQuery) => {
     if (!newQuery.trim()) {
       toast.error("Будь ласка, введіть текст для пошуку.");
       return;
@@ -33,36 +61,12 @@ const App = () => {
     setImages([]);
     setPage(1);
     setError(null);
-    setLoading(true);
-
-    try {
-      const data = await searchImages(newQuery, 1);
-      if (data.results.length === 0) {
-        setError("За вашим запитом нічого не знайдено.");
-      } else {
-        setImages(data.results);
-      }
-    } catch (error) {
-      setError("Не вдалося завантажити зображення. Спробуйте ще раз.");
-    } finally {
-      setLoading(false);
-    }
   };
 
-  const handleLoadMore = async () => {
-    const nextPage = page + 1;
-    setPage(nextPage);
-    setLoading(true);
-
-    try {
-      const data = await searchImages(query, nextPage);
-      setImages((prevImages) => [...prevImages, ...data.results]);
-    } catch (error) {
-      setError("Не вдалося завантажити нові зображення");
-    } finally {
-      setLoading(false);
-    }
+  const handleLoadMore = () => {
+    setPage((prevPage) => prevPage + 1);
   };
+
   const openModal = (imageSrc, imageAlt) => {
     setModalData({
       isOpen: true,
@@ -78,22 +82,6 @@ const App = () => {
       imageAlt: "",
     });
   };
-
-  // useEffect(() => {
-  //   const fetchPopularImages = async () => {
-  //     setLoading(true);
-  //     try {
-  //       const data = await getPopularImages();
-  //       setImages(data);
-  //     } catch (error) {
-  //       setError("Не вдалося завантажити популярні фото.");
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchPopularImages();
-  // }, [page]);
 
   return (
     <div>
@@ -119,5 +107,4 @@ const App = () => {
     </div>
   );
 };
-
 export default App;
